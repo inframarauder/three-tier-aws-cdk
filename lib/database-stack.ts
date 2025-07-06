@@ -8,8 +8,6 @@ export interface DatabaseStackProps extends StackProps {
     environment: Types.ENVIRONMENT;
     vpc: Vpc;
     clusterNamePrefix: string;
-    defaultDBName: string;
-    masterUsername: string;
     instanceType: string;
 }
 
@@ -53,8 +51,6 @@ export class DatabaseStack extends Stack {
             engine: DatabaseClusterEngine.auroraPostgres({
                 version: AuroraPostgresEngineVersion.VER_17_4 // latest available
             }),
-            credentials: Credentials.fromUsername(props.masterUsername),
-            defaultDatabaseName: props.defaultDBName,
             vpc: props.vpc,
             vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED }, // place RDS instances in air-gapped subnets
             iamAuthentication: true, // to be used by ECS tasks

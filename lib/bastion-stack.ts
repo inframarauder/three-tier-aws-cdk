@@ -31,7 +31,6 @@ export interface BastionStackProps extends StackProps {
     bastionSG: SecurityGroup;
     ubuntuAmiSSMParam: string;
     rdsClusterIdentifier: string;
-    rdsClusterUsername: string;
 }
 
 export interface BastionStackOutputs {
@@ -56,7 +55,7 @@ export class BastionStack extends Stack {
         this.bastionIamRole.addToPolicy(new PolicyStatement({
             actions: ['rds-db:connect'],
             resources: [
-                `arn:aws:rds-db:${this.region}:${this.account}:${props.rdsClusterIdentifier}/${props.rdsClusterUsername}`
+                `arn:aws:rds-db:${this.region}:${this.account}:dbuser:${props.rdsClusterIdentifier}/postgres`
             ]
         }));
         this.bastionIamRole.addManagedPolicy(
