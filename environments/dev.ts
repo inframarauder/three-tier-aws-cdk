@@ -16,6 +16,6 @@ export default {
         clusterNamePrefix: "three-tier-app",
         defaultDBName: "gunsnroses",
         masterUsername: "axlrose",
-        instanceType: "t3.small"
+        instanceType: "t3.medium"
     }
 };
