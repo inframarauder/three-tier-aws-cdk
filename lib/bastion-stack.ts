@@ -1,4 +1,5 @@
 import * as Types from '../types';
+import fs from 'fs';
 import path from 'path';
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from 'constructs';
@@ -73,11 +74,11 @@ export class BastionStack extends Stack {
         const bastionHostName = `bastion-${props.environment}`;
 
         // add user-data to the bastion
+        const userDataPath = path.resolve(__dirname, './scripts/bastion-init.sh');
+        const userDataContent = fs.readFileSync(userDataPath, "utf-8");
+        userDataContent.replace(/\${hostname}/g, bastionHostName);
         const userData = UserData.forLinux();
-        userData.addExecuteFileCommand({
-            filePath: './user-data/bastion-init.sh',
-            arguments: `${bastionHostName}`
-        });
+        userData.addCommands(...userDataContent.split("\n"));
 
         // create the bastion host
         this.bastionHost = new Instance(this, 'BastionHost', {

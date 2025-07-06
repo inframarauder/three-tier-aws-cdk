@@ -6,7 +6,7 @@ set -eux
 sudo apt-get update -y
 
 # set hostname
-sudo hostnamectl set-hostname "${1}"
+sudo hostnamectl set-hostname "${hostname}"
 
 # install utilities
 sudo apt-get install -y unzip curl
