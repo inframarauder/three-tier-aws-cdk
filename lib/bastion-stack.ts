@@ -75,7 +75,7 @@ export class BastionStack extends Stack {
         // add user-data to the bastion
         const userData = UserData.forLinux();
         userData.addExecuteFileCommand({
-            filePath: path.join(__dirname, '../user-data/bastion-init.sh'),
+            filePath: './user-data/bastion-init.sh',
             arguments: `${bastionHostName}`
         });
 
