@@ -28,7 +28,7 @@ const provisionInfra = (configs: any): void => {
     });
     const databaseStackOutputs = databaseStack.getOutputs();
 
-    // create BastionStack and log outputs
+    // create BastionStack and get outputs
     const bastionStack = new BastionStack(app, 'BastionStack', {
         ...configs.BastionStackProps,
         vpc: vpcStackOutputs.vpc,
@@ -36,6 +36,11 @@ const provisionInfra = (configs: any): void => {
         rdsClusterUsername: configs.DatabaseStackProps.masterUsername
     });
     const bastionStackOutputs = bastionStack.getOutputs();
+
+    // update databaseStack firewalls
+    databaseStack.whiteListBastion(bastionStackOutputs.bastionSG);
+
+    // Log required outputs
     new cdk.CfnOutput(bastionStack, 'BastionPublicIP', {
         value: bastionStackOutputs.bastionPubIp,
         description: 'Bastion Public IP'
@@ -43,6 +48,10 @@ const provisionInfra = (configs: any): void => {
     new cdk.CfnOutput(bastionStack, 'BastionPublicDNS', {
         value: bastionStackOutputs.bastionPublicDnsName,
         description: 'Bastion Public DNS'
+    });
+    new cdk.CfnOutput(databaseStack, 'RDSClusterEndpoint', {
+        value: databaseStackOutputs.clusterEndpoint,
+        description: 'RDS Cluster Endpoint'
     });
 };
 
