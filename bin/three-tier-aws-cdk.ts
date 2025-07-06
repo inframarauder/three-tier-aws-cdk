@@ -33,15 +33,11 @@ const provisionInfra = (configs: any): void => {
         ...configs.BastionStackProps,
         vpc: vpcStackOutputs.vpc,
         rdsClusterIdentifier: databaseStackOutputs.clusterIdentifier,
-        rdsClusterUsername: configs.DatabaseStackProps.masterUsername
+        rdsClusterUsername: configs.DatabaseStackProps.masterUsername,
+        rdsSecurityGroup: databaseStackOutputs.rdsSecurityGroup,
+        rdsPort: parseInt(databaseStackOutputs.clusterEndpoint.split(":")[1])
     });
     const bastionStackOutputs = bastionStack.getOutputs();
-
-    // whitelist bastion on RDS firewall
-    bastionStack.whiteListBastionOnRDS(
-        databaseStackOutputs.rdsSecurityGroup,
-        parseInt(databaseStackOutputs.clusterEndpoint.split(":")[1])
-    );
 
 
     // Log required outputs

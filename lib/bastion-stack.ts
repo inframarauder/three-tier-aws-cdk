@@ -31,6 +31,8 @@ export interface BastionStackProps extends StackProps {
     ubuntuAmiSSMParam: string;
     rdsClusterIdentifier: string;
     rdsClusterUsername: string;
+    rdsSecurityGroup: SecurityGroup;
+    rdsPort: number;
 }
 
 export interface BastionStackOutputs {
@@ -55,6 +57,10 @@ export class BastionStack extends Stack {
 
         // add SSH ingress for selected IPs
         this.bastionSG.addIngressRule(Peer.ipv4(props.sshWhitelistedCidr), Port.tcp(22), 'Allow SSH');
+
+        // whitelist bastion on RDS Firewall
+        const bastionSgId = this.bastionSG.securityGroupId;
+        props.rdsSecurityGroup.addIngressRule(Peer.securityGroupId(bastionSgId), Port.tcp(props.rdsPort));
 
         // create IAM role and attach policies to allow RDS connections and SSM access
         this.bastionIamRole = new Role(this, 'BastionIamRole', {
@@ -99,10 +105,5 @@ export class BastionStack extends Stack {
             bastionPublicDnsName: this.bastionHost.instancePublicDnsName,
             bastionSG: this.bastionSG
         };
-    }
-    // method to update RDS Security Group with bastion's SG
-    whiteListBastionOnRDS(rdsSecurityGroup: SecurityGroup, rdsPort: number): void {
-        const bastionSgId = this.bastionSG.securityGroupId;
-        rdsSecurityGroup.addIngressRule(Peer.securityGroupId(bastionSgId), Port.tcp(rdsPort));
     }
 }
