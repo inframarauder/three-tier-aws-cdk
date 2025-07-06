@@ -36,7 +36,14 @@ const provisionInfra = (configs: any): void => {
         rdsClusterUsername: configs.DatabaseStackProps.masterUsername
     });
     const bastionStackOutputs = bastionStack.getOutputs();
-    console.log(`Bastion Public IP: ${bastionStackOutputs.bastionPubIp}\nBastion Public DNS: ${bastionStackOutputs.bastionPublicDnsName}`);
+    new cdk.CfnOutput(bastionStack, 'BastionPublicIP', {
+        value: bastionStackOutputs.bastionPubIp,
+        description: 'Bastion Public IP'
+    });
+    new cdk.CfnOutput(bastionStack, 'BastionPublicDNS', {
+        value: bastionStackOutputs.bastionPublicDnsName,
+        description: 'Bastion Public DNS'
+    });
 };
 
 //dev infra goes here
