@@ -76,9 +76,9 @@ export class BastionStack extends Stack {
         // add user-data to the bastion
         const userDataPath = path.resolve(__dirname, './scripts/bastion-init.sh');
         const userDataContent = fs.readFileSync(userDataPath, "utf-8");
-        userDataContent.replace(/\${hostname}/g, bastionHostName);
+        const userDataRendered = userDataContent.replace(/\${hostname}/g, bastionHostName);
         const userData = UserData.forLinux();
-        userData.addCommands(...userDataContent.split("\n"));
+        userData.addCommands(...userDataRendered.split("\n"));
 
         // create the bastion host
         this.bastionHost = new Instance(this, 'BastionHost', {
