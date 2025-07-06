@@ -1,6 +1,6 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { InstanceClass, InstanceSize, InstanceType, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { InstanceClass, InstanceSize, InstanceType, Peer, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as Types from '../types';
 import { AuroraPostgresEngineVersion, ClusterInstance, Credentials, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
 import { Cluster } from 'aws-cdk-lib/aws-ecs';
@@ -15,9 +15,8 @@ export interface DatabaseStackProps extends StackProps {
 }
 
 export interface DatabaseStackOutputs {
-    readerEndpoint: string;
-    writerEndpoint: string;
-    clusterArn: string;
+    clusterEndpoint: string;
+    clusterIdentifier: string;
     rdsSecurityGroup: SecurityGroup;
 }
 
@@ -54,10 +53,15 @@ export class DatabaseStack extends Stack {
     // return necessary outputs
     getOutputs(): DatabaseStackOutputs {
         return {
-            clusterArn: this.cluster.clusterArn,
-            readerEndpoint: this.cluster.clusterReadEndpoint.socketAddress,
-            writerEndpoint: this.cluster.clusterEndpoint.socketAddress,
+            clusterEndpoint: this.cluster.clusterEndpoint.socketAddress,
+            clusterIdentifier: this.cluster.clusterIdentifier,
             rdsSecurityGroup: this.rdsSecurityGroup
         };
+    }
+    // method to update RDS Security Group with bastion's SG
+    whiteListBastion(bastionSG: SecurityGroup): void {
+        const bastionSgId = bastionSG.securityGroupId;
+        const rdsPort = this.cluster.clusterEndpoint.port;
+        this.rdsSecurityGroup.addIngressRule(Peer.securityGroupId(bastionSgId), Port.tcp(rdsPort));
     }
 }
