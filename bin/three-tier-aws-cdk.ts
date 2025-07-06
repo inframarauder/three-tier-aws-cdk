@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
 import { NetworkStack } from '../lib/network-stack';
-import * as DevConfigs from '../environments/dev';
+import DevConfigs from '../environments/dev';
 
 // create CDK app
 const app = new cdk.App();
@@ -10,5 +10,11 @@ const app = new cdk.App();
 cdk.Tags.of(app).add('aws-cdk', 'true');
 cdk.Tags.of(app).add('auto-destroy', 'true'); // needed for lambda to auto destroy resources, in case i forget!!
 
-// create NetworkStack
-new NetworkStack(app, 'NetworkStack', DevConfigs.NetworkStackProps);
+// method to provision entire infra via all the stacks
+const provisionInfra = (configs: any): void => {
+    // create NetworkStack
+    new NetworkStack(app, 'NetworkStack', configs.NetworkStackProps);
+};
+
+//dev infra goes here
+provisionInfra(DevConfigs);
