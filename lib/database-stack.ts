@@ -1,8 +1,9 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { InstanceClass, InstanceSize, InstanceType, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as Types from '../types';
-import { AuroraPostgresEngineVersion, Credentials, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
+import { AuroraPostgresEngineVersion, ClusterInstance, Credentials, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
+import { Cluster } from 'aws-cdk-lib/aws-ecs';
 
 export interface DatabaseStackProps extends StackProps {
     environment: Types.ENVIRONMENT;
@@ -10,6 +11,7 @@ export interface DatabaseStackProps extends StackProps {
     clusterNamePrefix: string;
     defaultDBName: string;
     masterUsername: string;
+    instanceType: string;
 }
 
 export interface DatabaseStackOutputs {
@@ -42,7 +44,10 @@ export class DatabaseStack extends Stack {
             defaultDatabaseName: props.defaultDBName,
             vpc: props.vpc,
             vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED }, // place RDS instances in air-gapped subnets
-            iamAuthentication: true // to be used by ECS tasks
+            iamAuthentication: true, // to be used by ECS tasks
+            writer: ClusterInstance.provisioned('ClusterInstance', {
+                instanceType: new InstanceType(props.instanceType)
+            })
         });
     }
 

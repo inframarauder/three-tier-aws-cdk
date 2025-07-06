@@ -15,6 +15,7 @@ export default {
         environment: 'dev' as ENVIRONMENT,
         clusterNamePrefix: "three-tier-app",
         defaultDBName: "gunsnroses",
-        masterUsername: "axlrose"
+        masterUsername: "axlrose",
+        instanceType: "t3.small"
     }
 };
