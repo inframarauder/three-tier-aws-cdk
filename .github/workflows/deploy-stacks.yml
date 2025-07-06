@@ -51,4 +51,4 @@ jobs:
 
             - name: Deploy all stacks
               run: |
-                npx cdk deploy --require-approval never
+                npx cdk deploy --require-approval never --all
