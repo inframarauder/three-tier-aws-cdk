@@ -100,4 +100,9 @@ export class BastionStack extends Stack {
             bastionSG: this.bastionSG
         };
     }
+    // method to update RDS Security Group with bastion's SG
+    whiteListBastionOnRDS(rdsSecurityGroup: SecurityGroup, rdsPort: number): void {
+        const bastionSgId = this.bastionSG.securityGroupId;
+        rdsSecurityGroup.addIngressRule(Peer.securityGroupId(bastionSgId), Port.tcp(rdsPort));
+    }
 }

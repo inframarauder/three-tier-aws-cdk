@@ -37,8 +37,12 @@ const provisionInfra = (configs: any): void => {
     });
     const bastionStackOutputs = bastionStack.getOutputs();
 
-    // update databaseStack firewalls
-    databaseStack.whiteListBastion(bastionStackOutputs.bastionSG);
+    // whitelist bastion on RDS firewall
+    bastionStack.whiteListBastionOnRDS(
+        databaseStackOutputs.rdsSecurityGroup,
+        parseInt(databaseStackOutputs.clusterEndpoint.split(":")[1])
+    );
+
 
     // Log required outputs
     new cdk.CfnOutput(bastionStack, 'BastionPublicIP', {
