@@ -2,7 +2,9 @@
 import * as cdk from 'aws-cdk-lib';
 import { NetworkStack } from '../lib/network-stack';
 import { DatabaseStack } from '../lib/database-stack';
+import { BastionStack } from '../lib/bastion-stack';
 import DevConfigs from '../environments/dev';
+
 
 // create CDK app
 const app = new cdk.App();
@@ -13,16 +15,28 @@ cdk.Tags.of(app).add('auto-destroy', 'true'); // needed for lambda to auto destr
 
 // method to provision entire infra via all the stacks
 const provisionInfra = (configs: any): void => {
-    // create NetworkStack
+    // create NetworkStack and get outputs
     const vpcStack = new NetworkStack(app, 'NetworkStack', {
         ...configs.NetworkStackProps
     });
+    const vpcStackOutputs = vpcStack.getOutputs();
 
-    // create DatabaseStack
-    new DatabaseStack(app, 'DatabaseStack', {
+    // create DatabaseStack and get outputs
+    const databaseStack = new DatabaseStack(app, 'DatabaseStack', {
         ...configs.DatabaseStackProps,
-        vpc: vpcStack.getOutputs().vpc
+        vpc: vpcStackOutputs.vpc
     });
+    const databaseStackOutputs = databaseStack.getOutputs();
+
+    // create BastionStack and log outputs
+    const bastionStack = new BastionStack(app, 'BastionStack', {
+        ...configs.BastionStackProps,
+        vpc: vpcStackOutputs.vpc,
+        rdsClusterIdentifier: databaseStackOutputs.clusterIdentifier,
+        rdsClusterUsername: configs.DatabaseStackProps.masterUsername
+    });
+    const bastionStackOutputs = bastionStack.getOutputs();
+    console.log(`Bastion Public IP: ${bastionStackOutputs.bastionPubIp}\nBastion Public DNS: ${bastionStackOutputs.bastionPublicDnsName}`);
 };
 
 //dev infra goes here
