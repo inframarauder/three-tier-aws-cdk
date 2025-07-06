@@ -10,5 +10,11 @@ export default {
         databaseSubnetCidrMask: 28,
         maxAZs: 2,
         numNatGateways: 1,
+    },
+    DatabaseStackProps: {
+        environment: 'dev' as ENVIRONMENT,
+        clusterNamePrefix: "three-tier-app",
+        defaultDBName: "gunsnroses",
+        masterUsername: "axlrose"
     }
 };

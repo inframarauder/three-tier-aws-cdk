@@ -1,5 +1,5 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
-import { Vpc, SubnetConfiguration, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { Vpc, SubnetConfiguration, SubnetType, IpAddresses } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import * as Types from '../types';
 
@@ -46,7 +46,7 @@ export class NetworkStack extends Stack {
         // create VPC with subnet configs
         this.vpc = new Vpc(this, 'ThreeTierVpc', {
             vpcName: `${props.vpcNamePrefix}-${props.environment}`,
-            cidr: props.vpcCidrIPv4,
+            ipAddresses: IpAddresses.cidr(props.vpcCidrIPv4),
             maxAzs: props.maxAZs,
             natGateways: props.numNatGateways,
             subnetConfiguration
