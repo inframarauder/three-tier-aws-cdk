@@ -28,39 +28,26 @@ export interface BastionStackProps extends StackProps {
     instanceType: string;
     sshKeyName: string;
     sshWhitelistedCidr: string;
+    bastionSG: SecurityGroup;
     ubuntuAmiSSMParam: string;
     rdsClusterIdentifier: string;
     rdsClusterUsername: string;
-    rdsSecurityGroup: SecurityGroup;
-    rdsPort: number;
 }
 
 export interface BastionStackOutputs {
     bastionPubIp: string;
     bastionPublicDnsName: string;
-    bastionSG: SecurityGroup;
 }
 
 export class BastionStack extends Stack {
-    private readonly bastionSG;
     private readonly bastionIamRole;
     private readonly bastionHost;
 
     constructor(scope: Construct, id: string, props: BastionStackProps) {
         super(scope, id, props);
 
-        // create security group for bastion
-        this.bastionSG = new SecurityGroup(this, 'BastionSG', {
-            vpc: props.vpc,
-            description: "Allow SSH access to bastion host from sepcific IP(s)",
-        });
-
         // add SSH ingress for selected IPs
-        this.bastionSG.addIngressRule(Peer.ipv4(props.sshWhitelistedCidr), Port.tcp(22), 'Allow SSH');
-
-        // whitelist bastion on RDS Firewall
-        const bastionSgId = this.bastionSG.securityGroupId;
-        props.rdsSecurityGroup.addIngressRule(Peer.securityGroupId(bastionSgId), Port.tcp(props.rdsPort));
+        props.bastionSG.addIngressRule(Peer.ipv4(props.sshWhitelistedCidr), Port.tcp(22), 'Allow SSH');
 
         // create IAM role and attach policies to allow RDS connections and SSM access
         this.bastionIamRole = new Role(this, 'BastionIamRole', {
@@ -93,7 +80,7 @@ export class BastionStack extends Stack {
             machineImage: MachineImage.fromSsmParameter(props.ubuntuAmiSSMParam),
             vpcSubnets: { subnetType: SubnetType.PUBLIC },
             keyPair: KeyPair.fromKeyPairName(this, 'BastionSSHKeyPair', props.sshKeyName),
-            securityGroup: this.bastionSG,
+            securityGroup: props.bastionSG,
             role: this.bastionIamRole,
             userData: userData
         });
@@ -103,7 +90,6 @@ export class BastionStack extends Stack {
         return {
             bastionPubIp: this.bastionHost.instancePublicIp,
             bastionPublicDnsName: this.bastionHost.instancePublicDnsName,
-            bastionSG: this.bastionSG
         };
     }
 }

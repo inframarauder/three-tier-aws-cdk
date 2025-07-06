@@ -24,7 +24,7 @@ const provisionInfra = (configs: any): void => {
     // create DatabaseStack and get outputs
     const databaseStack = new DatabaseStack(app, 'DatabaseStack', {
         ...configs.DatabaseStackProps,
-        vpc: vpcStackOutputs.vpc
+        vpc: vpcStackOutputs.vpc,
     });
     const databaseStackOutputs = databaseStack.getOutputs();
 
@@ -32,10 +32,9 @@ const provisionInfra = (configs: any): void => {
     const bastionStack = new BastionStack(app, 'BastionStack', {
         ...configs.BastionStackProps,
         vpc: vpcStackOutputs.vpc,
+        bastionSG: databaseStackOutputs.bastionSG,
         rdsClusterIdentifier: databaseStackOutputs.clusterIdentifier,
         rdsClusterUsername: configs.DatabaseStackProps.masterUsername,
-        rdsSecurityGroup: databaseStackOutputs.rdsSecurityGroup,
-        rdsPort: parseInt(databaseStackOutputs.clusterEndpoint.split(":")[1])
     });
     const bastionStackOutputs = bastionStack.getOutputs();
 
