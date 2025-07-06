@@ -53,6 +53,7 @@ export class NetworkStack extends Stack {
         });
     }
 
+    // return stack outputs
     getOutputs(): NetworkStackOutputs {
         return {
             vpc: this.vpc
