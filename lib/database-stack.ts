@@ -53,6 +53,7 @@ export class DatabaseStack extends Stack {
             }),
             vpc: props.vpc,
             vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED }, // place RDS instances in air-gapped subnets
+            securityGroups: [this.rdsSecurityGroup],
             iamAuthentication: true, // to be used by ECS tasks
             writer: ClusterInstance.provisioned('ClusterInstance', {
                 instanceType: new InstanceType(props.instanceType)

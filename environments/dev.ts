@@ -20,7 +20,7 @@ export default {
         environment: 'dev' as ENVIRONMENT,
         instanceType: "t3.micro",
         sshKeyName: "ssh-ap-south-1",// hardcoding for now - already exists in my AWS account
-        sshWhitelistedCidr: "27.7.149.214/32", // hardcoding for now
+        sshWhitelistedCidr: "49.207.218.146/32", // hardcoding for now
         ubuntuAmiSSMParam: "/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id" // hardcoding for now
     }
 };
