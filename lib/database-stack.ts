@@ -13,7 +13,7 @@ export interface DatabaseStackProps extends StackProps {
 
 export interface DatabaseStackOutputs {
     clusterEndpoint: string;
-    clusterIdentifier: string;
+    clusterResourceIdentifier: string;
     rdsSecurityGroup: SecurityGroup;
     bastionSG: SecurityGroup;
 }
@@ -66,7 +66,7 @@ export class DatabaseStack extends Stack {
     getOutputs(): DatabaseStackOutputs {
         return {
             clusterEndpoint: this.cluster.clusterEndpoint.socketAddress,
-            clusterIdentifier: this.cluster.clusterIdentifier,
+            clusterResourceIdentifier: this.cluster.clusterResourceIdentifier,
             rdsSecurityGroup: this.rdsSecurityGroup,
             bastionSG: this.bastionSG
         };

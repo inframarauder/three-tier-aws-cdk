@@ -33,7 +33,7 @@ const provisionInfra = (configs: any): void => {
         ...configs.BastionStackProps,
         vpc: vpcStackOutputs.vpc,
         bastionSG: databaseStackOutputs.bastionSG,
-        rdsClusterIdentifier: databaseStackOutputs.clusterIdentifier
+        rdsClusterIdentifier: databaseStackOutputs.clusterResourceIdentifier
     });
     const bastionStackOutputs = bastionStack.getOutputs();
 
