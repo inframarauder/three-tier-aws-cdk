@@ -66,7 +66,7 @@ export class DatabaseStack extends Stack {
     getOutputs(): DatabaseStackOutputs {
         return {
             clusterEndpoint: this.cluster.clusterEndpoint.socketAddress,
-            clusterIdentifier: this.cluster.clusterIdentifier,
+            clusterIdentifier: this.cluster.clusterResourceIdentifier,
             rdsSecurityGroup: this.rdsSecurityGroup,
             bastionSG: this.bastionSG
         };
